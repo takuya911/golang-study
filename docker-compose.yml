@@ -20,7 +20,19 @@ services:
     - mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mysql
+      MYSQL_DATABASE: mysql-db
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=password
+    ports:
+      - 1234:80
+    volumes:
+      - /sessions
 volumes:
   mysql-data:
