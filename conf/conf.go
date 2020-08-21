@@ -20,7 +20,7 @@ var C config
 const (
 	defaultDBHost      = "db"
 	defaultDBPort      = "3306"
-	defaultDBName      = "mysql"
+	defaultDBName      = "mysql-db"
 	defaultDBUser      = "root"
 	defaultDBPass      = "password"
 	defaultDBCollation = "utf8mb4_unicode_ci"
