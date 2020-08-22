@@ -21,7 +21,7 @@ type UserUsecase interface {
 	GetByID(etx context.Context, id int) (User, error)
 	Store(etx context.Context, u *User) (string, error)
 	Update(etx context.Context, t *User) (string, error)
-	// Delete(etx context.Context, id int) (string, error)
+	Delete(etx context.Context, id int) (string, error)
 }
 
 // UserRepository interface
@@ -29,4 +29,5 @@ type UserRepository interface {
 	GetByID(ctx context.Context, id int) (User, error)
 	Store(ctx context.Context, u *User) error
 	Update(ctx context.Context, u *User) error
+	Delete(etx context.Context, id int) error
 }

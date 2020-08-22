@@ -39,10 +39,10 @@ func (u *userUsecase) Update(ctx context.Context, form *domain.User) (string, er
 	return "成功", nil
 }
 
-// func (u *userUsecase) Delete(ctx context.Context, id int) (string, error) {
-// 	if result := u.db.Where("id = ?", id).Delete(&domain.User{}); result.Error != nil {
-// 		panic(result.Error)
-// 	}
-// 	return "成功", nil
+func (u *userUsecase) Delete(ctx context.Context, id int) (string, error) {
+	if err := u.userRepo.Delete(ctx, id); err != nil {
+		panic(err)
+	}
+	return "成功", nil
 
-// }
+}
