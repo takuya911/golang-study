@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jinzhu/gorm"
-	"github.com/takuya911/golang-study/domain"
+	"github.com/takuya911/golang-study/user/domain"
 )
 
 type userRepo struct {

@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
-	"github.com/takuya911/golang-study/domain"
+	"github.com/takuya911/golang-study/user/domain"
 )
 
 type userHandler struct {

@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/takuya911/golang-study/domain"
+	"github.com/takuya911/golang-study/user/domain"
 )
 
 type userUsecase struct {
