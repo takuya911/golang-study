@@ -24,3 +24,10 @@ func (u *userRepo) GetByID(ctx context.Context, id int) (domain.User, error) {
 	}
 	return user, nil
 }
+
+func (u *userRepo) Store(ctx context.Context, form *domain.User) (err error) {
+	if result := u.Conn.Create(&form); result.Error != nil {
+		panic(result.Error)
+	}
+	return
+}

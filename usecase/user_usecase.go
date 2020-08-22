@@ -22,16 +22,15 @@ func (u *userUsecase) GetByID(ctx context.Context, id int) (domain.User, error) 
 	if err != nil {
 		panic(err)
 	}
-
 	return result, nil
 }
 
-// func (u *userUsecase) Store(ctx context.Context, form *domain.User) (string, error) {
-// 	if result := u.db.Create(&form); result.Error != nil {
-// 		panic(result.Error)
-// 	}
-// 	return "成功", nil
-// }
+func (u *userUsecase) Store(ctx context.Context, form *domain.User) (string, error) {
+	if err := u.userRepo.Store(ctx, form); err != nil {
+		panic(err)
+	}
+	return "成功", nil
+}
 
 // func (u *userUsecase) Update(ctx context.Context, form *domain.User) (string, error) {
 // 	if result := u.db.Model(&form).Where("id = ?", form.ID).Updates(&form); result.Error != nil {
