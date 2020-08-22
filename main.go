@@ -4,15 +4,16 @@ import (
 	"log"
 
 	"github.com/labstack/echo"
-	"github.com/takuya911/golang-study/handler"
-	"github.com/takuya911/golang-study/infra"
-	"github.com/takuya911/golang-study/usecase"
+	_userHandler "github.com/takuya911/golang-study/handler"
+	_infra "github.com/takuya911/golang-study/infra"
+	_userRepo "github.com/takuya911/golang-study/repository"
+	_userUsecase "github.com/takuya911/golang-study/usecase"
 )
 
 func main() {
 
 	// mysql connect
-	db, err := infra.NewGormDB()
+	db, err := _infra.NewGormDB()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,12 +24,12 @@ func main() {
 		}
 	}()
 
-	//
 	e := echo.New()
-	handler.NewUserHandler(
-		e,
-		usecase.NewUserUsecase(db),
-	)
+
+	// services
+	userRepo := _userRepo.NewUserRepository(db)
+	userUsecase := _userUsecase.NewUserUsecase(userRepo)
+	_userHandler.NewUserHandler(e, userUsecase)
 
 	log.Fatal(e.Start(":8080"))
 }

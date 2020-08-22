@@ -19,7 +19,12 @@ type User struct {
 // UserUsecase interface
 type UserUsecase interface {
 	GetByID(etx context.Context, id int) (User, error)
-	Store(etx context.Context, t *User) (string, error)
-	Update(etx context.Context, t *User) (string, error)
-	Delete(etx context.Context, id int) (string, error)
+	// Store(etx context.Context, t *User) (string, error)
+	// Update(etx context.Context, t *User) (string, error)
+	// Delete(etx context.Context, id int) (string, error)
+}
+
+// UserRepository interface
+type UserRepository interface {
+	GetByID(ctx context.Context, id int) (User, error)
 }
