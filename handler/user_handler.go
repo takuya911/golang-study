@@ -19,7 +19,7 @@ func NewUserHandler(e *echo.Echo, u domain.UserUsecase) {
 	}
 	e.GET("/user/:user_id", handler.GetUserByID)
 	e.POST("/user", handler.StoreUser)
-	// e.POST("/user/:user_id", handler.UpdateUser)
+	e.POST("/user/:user_id", handler.UpdateUser)
 	// e.DELETE("/user/:user_id", handler.DeleteUser)
 }
 
@@ -53,25 +53,25 @@ func (h *userHandler) StoreUser(e echo.Context) error {
 	return e.JSON(http.StatusOK, result)
 }
 
-// func (h *userHandler) UpdateUser(e echo.Context) error {
-// 	userID, err := strconv.Atoi(e.Param("user_id"))
-// 	if err != nil {
-// 		return e.JSON(http.StatusNotFound, "atoi err...")
-// 	}
-// 	etx := e.Request().Context()
+func (h *userHandler) UpdateUser(e echo.Context) error {
+	userID, err := strconv.Atoi(e.Param("user_id"))
+	if err != nil {
+		return e.JSON(http.StatusNotFound, "atoi err...")
+	}
+	etx := e.Request().Context()
 
-// 	var user domain.User
-// 	if err := e.Bind(&user); err != nil {
-// 		return e.JSON(http.StatusBadRequest, "input bind err...")
-// 	}
-// 	user.ID = userID
+	var user domain.User
+	if err := e.Bind(&user); err != nil {
+		return e.JSON(http.StatusBadRequest, "input bind err...")
+	}
+	user.ID = userID
 
-// 	result, err := h.usecase.Update(etx, &user)
-// 	if err != nil {
-// 		return e.JSON(http.StatusBadRequest, err.Error())
-// 	}
-// 	return e.JSON(http.StatusOK, result)
-// }
+	result, err := h.usecase.Update(etx, &user)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+	return e.JSON(http.StatusOK, result)
+}
 
 // func (h *userHandler) DeleteUser(e echo.Context) error {
 // 	userID, err := strconv.Atoi(e.Param("user_id"))

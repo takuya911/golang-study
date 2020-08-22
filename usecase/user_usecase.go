@@ -32,12 +32,12 @@ func (u *userUsecase) Store(ctx context.Context, form *domain.User) (string, err
 	return "成功", nil
 }
 
-// func (u *userUsecase) Update(ctx context.Context, form *domain.User) (string, error) {
-// 	if result := u.db.Model(&form).Where("id = ?", form.ID).Updates(&form); result.Error != nil {
-// 		panic(result.Error)
-// 	}
-// 	return "成功", nil
-// }
+func (u *userUsecase) Update(ctx context.Context, form *domain.User) (string, error) {
+	if err := u.userRepo.Update(ctx, form); err != nil {
+		panic(err)
+	}
+	return "成功", nil
+}
 
 // func (u *userUsecase) Delete(ctx context.Context, id int) (string, error) {
 // 	if result := u.db.Where("id = ?", id).Delete(&domain.User{}); result.Error != nil {

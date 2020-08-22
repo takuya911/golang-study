@@ -31,3 +31,10 @@ func (u *userRepo) Store(ctx context.Context, form *domain.User) (err error) {
 	}
 	return
 }
+
+func (u *userRepo) Update(ctx context.Context, form *domain.User) (err error) {
+	if result := u.Conn.Model(&form).Where("id = ?", form.ID).Updates(&form); result.Error != nil {
+		return result.Error
+	}
+	return
+}
