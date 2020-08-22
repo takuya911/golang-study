@@ -24,17 +24,12 @@ func NewUserHandler(e *echo.Echo, u domain.UserUsecase) {
 }
 
 func (h *userHandler) GetUserByID(e echo.Context) error {
-	userID, err := strconv.Atoi(e.Param("user_id"))
-	if err != nil {
-		return e.JSON(http.StatusNotFound, "atoi err...")
-	}
-
+	userID, _ := strconv.Atoi(e.Param("user_id"))
 	if userID < 1 {
 		return e.JSON(http.StatusBadGateway, "input valid err...")
 	}
 
 	etx := e.Request().Context()
-
 	user, err := h.usecase.GetByID(etx, userID)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
