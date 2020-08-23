@@ -47,11 +47,11 @@ func (h *userHandler) StoreUser(e echo.Context) error {
 		return e.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	result, err := h.usecase.Store(etx, &user)
+	err := h.usecase.Store(etx, &user)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
-	return e.JSON(http.StatusOK, result)
+	return e.JSON(http.StatusCreated, user)
 }
 
 func (h *userHandler) UpdateUser(e echo.Context) error {
@@ -67,11 +67,11 @@ func (h *userHandler) UpdateUser(e echo.Context) error {
 	}
 	user.ID = userID
 
-	result, err := h.usecase.Update(etx, &user)
+	err = h.usecase.Update(etx, &user)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
-	return e.JSON(http.StatusOK, result)
+	return e.JSON(http.StatusCreated, user)
 }
 
 func (h *userHandler) DeleteUser(e echo.Context) error {
@@ -81,10 +81,9 @@ func (h *userHandler) DeleteUser(e echo.Context) error {
 	}
 
 	etx := e.Request().Context()
-	result, err := h.usecase.Delete(etx, userID)
-	if err != nil {
+	if err := h.usecase.Delete(etx, userID); err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	return e.JSON(http.StatusOK, result)
+	return e.NoContent(http.StatusNoContent)
 }
