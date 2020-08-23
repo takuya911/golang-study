@@ -4,6 +4,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    environment:
+        - DB_HOST=db
+        - DB_PORT=3306
+        - DB_NAME=mysql-db
+        - DB_USER=root
+        - DB_PASS=password
+        - DB_COLLATION=utf8mb4_unicode_ci
     volumes:
     - .:/app
     ports:
