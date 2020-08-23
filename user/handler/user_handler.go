@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo"
 	"github.com/takuya911/golang-study/conf"
 	"github.com/takuya911/golang-study/user/domain"
@@ -67,6 +68,11 @@ func (h *userHandler) UpdateUser(e echo.Context) error {
 	}
 	user.ID = userID
 
+	var ok bool
+	if ok, err = isFormValid(&user); !ok {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+
 	err = h.usecase.Update(etx, &user)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
@@ -86,4 +92,13 @@ func (h *userHandler) DeleteUser(e echo.Context) error {
 	}
 
 	return e.NoContent(http.StatusNoContent)
+}
+
+func isFormValid(u *domain.User) (bool, error) {
+	validate := validator.New()
+	err := validate.Struct(u)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
