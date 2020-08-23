@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/takuya911/golang-study/conf"
 	"github.com/takuya911/golang-study/user/domain"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type userHandler struct {
@@ -53,6 +54,12 @@ func (h *userHandler) StoreUser(e echo.Context) (err error) {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
 
+	hash, err := passwordHash(user.Password)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+	user.Password = hash
+
 	err = h.usecase.Store(etx, &user)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
@@ -77,6 +84,12 @@ func (h *userHandler) UpdateUser(e echo.Context) error {
 	if ok, err = isFormValid(&user); !ok {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	hash, err := passwordHash(user.Password)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+	user.Password = hash
 
 	err = h.usecase.Update(etx, &user)
 	if err != nil {
@@ -106,4 +119,18 @@ func isFormValid(u *domain.User) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+// パスワードハッシュを作る
+func passwordHash(pw string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), err
+}
+
+// パスワードがハッシュにマッチするかどうかを調べる
+func passwordVerify(hash, pw string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
 }
