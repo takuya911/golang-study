@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
+	"github.com/takuya911/golang-study/conf"
 	"github.com/takuya911/golang-study/user/domain"
 )
 
@@ -26,7 +27,7 @@ func NewUserHandler(e *echo.Echo, u domain.UserUsecase) {
 func (h *userHandler) GetUserByID(e echo.Context) error {
 	userID, _ := strconv.Atoi(e.Param("user_id"))
 	if userID < 1 {
-		return e.JSON(http.StatusBadGateway, "input valid err...")
+		return e.JSON(http.StatusNotFound, conf.ErrNotFound.Error())
 	}
 
 	etx := e.Request().Context()
@@ -43,7 +44,7 @@ func (h *userHandler) StoreUser(e echo.Context) error {
 
 	var user domain.User
 	if err := e.Bind(&user); err != nil {
-		return e.JSON(http.StatusBadRequest, "input bind err...")
+		return e.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
 	result, err := h.usecase.Store(etx, &user)
@@ -56,13 +57,13 @@ func (h *userHandler) StoreUser(e echo.Context) error {
 func (h *userHandler) UpdateUser(e echo.Context) error {
 	userID, err := strconv.Atoi(e.Param("user_id"))
 	if err != nil {
-		return e.JSON(http.StatusNotFound, "atoi err...")
+		return e.JSON(http.StatusNotFound, conf.ErrNotFound.Error())
 	}
 	etx := e.Request().Context()
 
 	var user domain.User
 	if err := e.Bind(&user); err != nil {
-		return e.JSON(http.StatusBadRequest, "input bind err...")
+		return e.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 	user.ID = userID
 
@@ -76,7 +77,7 @@ func (h *userHandler) UpdateUser(e echo.Context) error {
 func (h *userHandler) DeleteUser(e echo.Context) error {
 	userID, err := strconv.Atoi(e.Param("user_id"))
 	if err != nil {
-		return e.JSON(http.StatusNotFound, "input atoi err...")
+		return e.JSON(http.StatusNotFound, conf.ErrNotFound.Error())
 	}
 
 	etx := e.Request().Context()
