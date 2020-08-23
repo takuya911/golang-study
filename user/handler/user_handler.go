@@ -40,7 +40,7 @@ func (h *userHandler) GetUserByID(e echo.Context) error {
 	return e.JSON(http.StatusOK, user)
 }
 
-func (h *userHandler) StoreUser(e echo.Context) error {
+func (h *userHandler) StoreUser(e echo.Context) (err error) {
 	etx := e.Request().Context()
 
 	var user domain.User
@@ -48,7 +48,12 @@ func (h *userHandler) StoreUser(e echo.Context) error {
 		return e.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	err := h.usecase.Store(etx, &user)
+	var ok bool
+	if ok, err = isFormValid(&user); !ok {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	err = h.usecase.Store(etx, &user)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
