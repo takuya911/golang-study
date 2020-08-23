@@ -8,8 +8,8 @@ import (
 // User struct
 type User struct {
 	ID        int        `json:"user_id" gorm:"primary_key"`
-	Name      string     `json:"name"`
-	Email     string     `json:"email,omitempty" validate:"email"`
+	Name      string     `json:"name" validate:"required"`
+	Email     string     `json:"email" validate:"required,email"`
 	Password  string     `json:"password" validate:"min=6,max=75"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
@@ -19,9 +19,9 @@ type User struct {
 // UserUsecase interface
 type UserUsecase interface {
 	GetByID(etx context.Context, id int) (User, error)
-	Store(etx context.Context, u *User) (string, error)
-	Update(etx context.Context, t *User) (string, error)
-	Delete(etx context.Context, id int) (string, error)
+	Store(etx context.Context, u *User) error
+	Update(etx context.Context, t *User) error
+	Delete(etx context.Context, id int) error
 }
 
 // UserRepository interface

@@ -20,29 +20,22 @@ func NewUserUsecase(u domain.UserRepository) *userUsecase {
 func (u *userUsecase) GetByID(ctx context.Context, id int) (domain.User, error) {
 	result, err := u.userRepo.GetByID(ctx, id)
 	if err != nil {
-		panic(err)
+		return domain.User{}, err
 	}
 	return result, nil
 }
 
-func (u *userUsecase) Store(ctx context.Context, form *domain.User) (string, error) {
-	if err := u.userRepo.Store(ctx, form); err != nil {
-		panic(err)
-	}
-	return "成功", nil
+func (u *userUsecase) Store(ctx context.Context, form *domain.User) (err error) {
+	err = u.userRepo.Store(ctx, form)
+	return
 }
 
-func (u *userUsecase) Update(ctx context.Context, form *domain.User) (string, error) {
-	if err := u.userRepo.Update(ctx, form); err != nil {
-		panic(err)
-	}
-	return "成功", nil
+func (u *userUsecase) Update(ctx context.Context, form *domain.User) (err error) {
+	err = u.userRepo.Update(ctx, form)
+	return
 }
 
-func (u *userUsecase) Delete(ctx context.Context, id int) (string, error) {
-	if err := u.userRepo.Delete(ctx, id); err != nil {
-		panic(err)
-	}
-	return "成功", nil
-
+func (u *userUsecase) Delete(ctx context.Context, id int) (err error) {
+	err = u.userRepo.Delete(ctx, id)
+	return
 }

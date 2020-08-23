@@ -4,8 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo"
+	"github.com/takuya911/golang-study/conf"
 	"github.com/takuya911/golang-study/user/domain"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type userHandler struct {
@@ -26,7 +29,7 @@ func NewUserHandler(e *echo.Echo, u domain.UserUsecase) {
 func (h *userHandler) GetUserByID(e echo.Context) error {
 	userID, _ := strconv.Atoi(e.Param("user_id"))
 	if userID < 1 {
-		return e.JSON(http.StatusBadGateway, "input valid err...")
+		return e.JSON(http.StatusNotFound, conf.ErrNotFound.Error())
 	}
 
 	etx := e.Request().Context()
@@ -38,52 +41,96 @@ func (h *userHandler) GetUserByID(e echo.Context) error {
 	return e.JSON(http.StatusOK, user)
 }
 
-func (h *userHandler) StoreUser(e echo.Context) error {
+func (h *userHandler) StoreUser(e echo.Context) (err error) {
 	etx := e.Request().Context()
 
 	var user domain.User
 	if err := e.Bind(&user); err != nil {
-		return e.JSON(http.StatusBadRequest, "input bind err...")
+		return e.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	result, err := h.usecase.Store(etx, &user)
+	var ok bool
+	if ok, err = isFormValid(&user); !ok {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	hash, err := passwordHash(user.Password)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
-	return e.JSON(http.StatusOK, result)
+	user.Password = hash
+
+	err = h.usecase.Store(etx, &user)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+	return e.JSON(http.StatusCreated, user)
 }
 
 func (h *userHandler) UpdateUser(e echo.Context) error {
 	userID, err := strconv.Atoi(e.Param("user_id"))
 	if err != nil {
-		return e.JSON(http.StatusNotFound, "atoi err...")
+		return e.JSON(http.StatusNotFound, conf.ErrNotFound.Error())
 	}
 	etx := e.Request().Context()
 
 	var user domain.User
 	if err := e.Bind(&user); err != nil {
-		return e.JSON(http.StatusBadRequest, "input bind err...")
+		return e.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 	user.ID = userID
 
-	result, err := h.usecase.Update(etx, &user)
+	var ok bool
+	if ok, err = isFormValid(&user); !ok {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	hash, err := passwordHash(user.Password)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
-	return e.JSON(http.StatusOK, result)
+	user.Password = hash
+
+	err = h.usecase.Update(etx, &user)
+	if err != nil {
+		return e.JSON(http.StatusBadRequest, err.Error())
+	}
+	return e.JSON(http.StatusCreated, user)
 }
 
 func (h *userHandler) DeleteUser(e echo.Context) error {
 	userID, err := strconv.Atoi(e.Param("user_id"))
 	if err != nil {
-		return e.JSON(http.StatusNotFound, "input atoi err...")
+		return e.JSON(http.StatusNotFound, conf.ErrNotFound.Error())
 	}
 
 	etx := e.Request().Context()
-	result, err := h.usecase.Delete(etx, userID)
-	if err != nil {
+	if err := h.usecase.Delete(etx, userID); err != nil {
 		return e.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	return e.JSON(http.StatusOK, result)
+	return e.NoContent(http.StatusNoContent)
+}
+
+func isFormValid(u *domain.User) (bool, error) {
+	validate := validator.New()
+	err := validate.Struct(u)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// パスワードハッシュを作る
+func passwordHash(pw string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), err
+}
+
+// パスワードがハッシュにマッチするかどうかを調べる
+func passwordVerify(hash, pw string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
 }

@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	// mysql connect
 	db, err := _infra.NewGormDB()
 	if err != nil {
