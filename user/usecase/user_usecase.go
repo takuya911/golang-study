@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/takuya911/golang-study/conf"
 	"github.com/takuya911/golang-study/user/domain"
 )
 
@@ -31,11 +32,15 @@ func (u *userUsecase) Store(ctx context.Context, form *domain.User) (err error) 
 }
 
 func (u *userUsecase) Update(ctx context.Context, form *domain.User) (err error) {
-	err = u.userRepo.Update(ctx, form)
-	return
+	if _, err := u.userRepo.GetByID(ctx, form.ID); err != nil {
+		return conf.ErrNotExist
+	}
+	return u.userRepo.Update(ctx, form)
 }
 
 func (u *userUsecase) Delete(ctx context.Context, id int) (err error) {
-	err = u.userRepo.Delete(ctx, id)
-	return
+	if _, err := u.userRepo.GetByID(ctx, id); err != nil {
+		return conf.ErrNotExist
+	}
+	return u.userRepo.Delete(ctx, id)
 }

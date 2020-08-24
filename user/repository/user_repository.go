@@ -18,7 +18,7 @@ func NewUserRepository(Conn *gorm.DB) domain.UserRepository {
 
 func (u *userRepo) GetByID(ctx context.Context, id int) (domain.User, error) {
 	var user domain.User
-	if result := u.Conn.Where("id = ?", id).Find(&user); result.Error != nil {
+	if result := u.Conn.Where("id = ? AND deleted_at is null", id).Find(&user); result.Error != nil {
 		return domain.User{}, result.Error
 	}
 	return user, nil

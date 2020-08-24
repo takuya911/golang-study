@@ -14,8 +14,10 @@ var (
 	ErrNotFound = errors.New("Your requested Item is not found")
 	// ErrConflict msg
 	ErrConflict = errors.New("Your Item already exist")
-	// ErrBadParamInput ,sg
+	// ErrBadParamInput msg
 	ErrBadParamInput = errors.New("Given Param is not valid")
+	// ErrNotExist msg
+	ErrNotExist = errors.New("Data is not exist")
 )
 
 // GetStatusCode funcction
@@ -32,6 +34,8 @@ func GetStatusCode(err error) int {
 		return http.StatusNotFound
 	case ErrConflict:
 		return http.StatusConflict
+	case ErrNotExist:
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}
