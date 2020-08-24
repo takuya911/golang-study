@@ -129,8 +129,3 @@ func passwordHash(pw string) (string, error) {
 	}
 	return string(hash), err
 }
-
-// パスワードがハッシュにマッチするかどうかを調べる
-func passwordVerify(hash, pw string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
-}
