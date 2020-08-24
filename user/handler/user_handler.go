@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-playground/validator"
@@ -12,7 +13,8 @@ import (
 )
 
 type userHandler struct {
-	usecase domain.UserUsecase
+	usecase      domain.UserUsecase
+	passwordHash int
 }
 
 // NewUserHandler function
@@ -123,9 +125,14 @@ func isFormValid(u *domain.User) (bool, error) {
 
 // パスワードハッシュを作る
 func passwordHash(pw string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
+	hashNum, err := strconv.Atoi(os.Getenv("HASH_NUMBER"))
 	if err != nil {
 		return "", err
 	}
-	return string(hash), err
+
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(pw), hashNum)
+	if err != nil {
+		return "", err
+	}
+	return string(hashedPass), err
 }

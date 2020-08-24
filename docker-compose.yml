@@ -11,6 +11,7 @@ services:
         - DB_USER=root
         - DB_PASS=password
         - DB_COLLATION=utf8mb4_unicode_ci
+        - HASH_NUMBER=12
     volumes:
     - .:/app
     ports:
